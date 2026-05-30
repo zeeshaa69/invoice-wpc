@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Web Pro Creations — Invoice Generator</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<style>
+  :root {
+    --gold: #B8860B;
+    --gold-light: #D4AC0D;
+    --gold-pale: #F5F0E8;
+    --dark: #0f0f0f;
+    --dark2: #1a1a1a;
+    --dark3: #252525;
+    --text: #e8e2d6;
+    --muted: #888;
+    --border: #2e2e2e;
+    --input-bg: #1c1c1c;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--dark);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    min-height: 100vh;
+    padding-bottom: 60px;
+  }
+
+  /* ── TOP BAR ── */
+  .topbar {
+    background: var(--dark2);
+    border-bottom: 1px solid var(--border);
+    padding: 18px 40px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    position: sticky; top: 0; z-index: 100;
+  }
+  .logo-mark {
+    width: 38px; height: 28px;
+    background: linear-gradient(135deg, #1a1400, var(--gold));
+    clip-path: polygon(15% 0%, 50% 100%, 85% 0%, 100% 20%, 70% 100%, 50% 60%, 30% 100%, 0% 20%);
+  }
+  .brand { font-family: 'Cormorant Garamond', serif; font-size: 20px; font-weight: 700; letter-spacing: 2px; color: var(--text); }
+  .brand span { color: var(--gold); }
+  .topbar-sub { font-size: 11px; color: var(--muted); margin-left: auto; letter-spacing: 1px; text-transform: uppercase; }
+
+  /* ── MAIN LAYOUT ── */
+  .container {
+    max-width: 960px;
+    margin: 48px auto;
+    padding: 0 24px;
+  }
+
+  .page-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 42px;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 6px;
+  }
+  .page-title span { color: var(--gold); }
+  .page-sub { font-size: 13px; color: var(--muted); margin-bottom: 40px; }
+
+  /* ── SECTIONS ── */
+  .section {
+    background: var(--dark2);
+    border: 1px solid var(--border);
+    border-radius: 2px;
+    margin-bottom: 20px;
+    overflow: hidden;
+  }
+  .section-header {
+    background: var(--dark3);
+    padding: 12px 22px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    border-bottom: 1px solid var(--border);
+  }
+  .section-header .dot {
+    width: 6px; height: 6px;
+    background: var(--gold);
+    border-radius: 50%;
+  }
+  .section-header h3 {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--gold);
+  }
+  .section-body { padding: 22px; }
+
+  /* ── GRID ── */
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .grid-4 { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 12px; }
+
+  /* ── INPUTS ── */
+  .field { display: flex; flex-direction: column; gap: 6px; }
+  label {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+  input, select, textarea {
+    background: var(--input-bg);
+    border: 1px solid var(--border);
+    border-radius: 1px;
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    padding: 10px 14px;
+    outline: none;
+    transition: border-color 0.2s;
+    width: 100%;
+  }
+  input:focus, select:focus, textarea:focus {
+    border-color: var(--gold);
+  }
+  textarea { resize: vertical; min-height: 70px; }
+  select option { background: #1a1a1a; }
+
+  /* ── SERVICE ROWS ── */
+  .services-list { display: flex; flex-direction: column; gap: 10px; }
+  .service-row {
+    display: grid;
+    grid-template-columns: 1fr 80px 110px 110px 36px;
+    gap: 10px;
+    align-items: center;
+    background: #161616;
+    border: 1px solid var(--border);
+    padding: 12px 14px;
+    border-radius: 1px;
+    position: relative;
+  }
+  .service-row .row-total {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--gold);
+    text-align: right;
+    padding-right: 4px;
+    min-width: 90px;
+  }
+  .remove-btn {
+    background: none;
+    border: 1px solid #333;
+    color: #666;
+    width: 30px; height: 30px;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 16px;
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.2s;
+  }
+  .remove-btn:hover { border-color: #c0392b; color: #c0392b; }
+
+  .add-row-btn {
+    background: none;
+    border: 1px dashed #333;
+    color: var(--muted);
+    padding: 11px;
+    width: 100%;
+    cursor: pointer;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    border-radius: 1px;
+    transition: all 0.2s;
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+  }
+  .add-row-btn:hover { border-color: var(--gold); color: var(--gold); }
+
+  /* ── TOTALS PREVIEW ── */
+  .totals-preview {
+    background: #161616;
+    border: 1px solid var(--border);
+    padding: 18px 22px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-top: 20px;
+  }
+  .total-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 13px;
+    color: var(--muted);
+  }
+  .total-row.grand {
+    border-top: 1px solid var(--gold);
+    margin-top: 6px;
+    padding-top: 12px;
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--gold);
+    font-family: 'Cormorant Garamond', serif;
+  }
+
+  /* ── GENERATE BUTTON ── */
+  .generate-btn {
+    width: 100%;
+    background: linear-gradient(135deg, #1a1200, var(--gold));
+    border: none;
+    color: #fff;
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 20px;
+    font-weight: 700;
+    letter-spacing: 3px;
+    padding: 18px;
+    cursor: pointer;
+    text-transform: uppercase;
+    border-radius: 1px;
+    margin-top: 28px;
+    transition: opacity 0.2s, transform 0.1s;
+    position: relative;
+    overflow: hidden;
+  }
+  .generate-btn:hover { opacity: 0.9; transform: translateY(-1px); }
+  .generate-btn:active { transform: translateY(0); }
+  .generate-btn.loading { opacity: 0.6; pointer-events: none; }
+
+  .col-labels {
+    display: grid;
+    grid-template-columns: 1fr 80px 110px 110px 36px;
+    gap: 10px;
+    padding: 0 14px;
+    margin-bottom: 4px;
+  }
+  .col-labels span {
+    font-size: 9px;
+    font-weight: 600;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+  .col-labels span:nth-child(3),
+  .col-labels span:nth-child(4) { text-align: center; }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="logo-mark"></div>
+  <div class="brand">WEB PRO <span>CREATIONS</span></div>
+  <div class="topbar-sub">Invoice Generator</div>
+</div>
+
+<div class="container">
+  <h1 class="page-title">Create <span>Invoice</span></h1>
+  <p class="page-sub">Fill in the details below and download a professional PDF invoice instantly.</p>
+
+  <!-- Invoice Meta -->
+  <div class="section">
+    <div class="section-header"><div class="dot"></div><h3>Invoice Details</h3></div>
+    <div class="section-body">
+      <div class="grid-4">
+        <div class="field">
+          <label>Invoice #</label>
+          <input type="text" id="invoiceNumber" value="#8832" placeholder="#0001"/>
+        </div>
+        <div class="field">
+          <label>Invoice Date</label>
+          <input type="date" id="invoiceDate"/>
+        </div>
+        <div class="field">
+          <label>Due Date</label>
+          <input type="date" id="dueDate"/>
+        </div>
+        <div class="field">
+          <label>Status</label>
+          <select id="status">
+            <option value="UNPAID">Unpaid</option>
+            <option value="PAID">Paid</option>
+            <option value="PARTIAL">Partial</option>
+            <option value="OVERDUE">Overdue</option>
+          </select>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bill To -->
+  <div class="section">
+    <div class="section-header"><div class="dot"></div><h3>Bill To</h3></div>
+    <div class="section-body">
+      <div class="grid-2" style="gap:16px;">
+        <div class="field">
+          <label>Client Name</label>
+          <input type="text" id="clientName" placeholder="John Smith"/>
+        </div>
+        <div class="field">
+          <label>Company</label>
+          <input type="text" id="company" placeholder="Client Company LLC"/>
+        </div>
+        <div class="field">
+          <label>Email</label>
+          <input type="email" id="email" placeholder="client@company.com"/>
+        </div>
+        <div class="field">
+          <label>Phone</label>
+          <input type="tel" id="phone" placeholder="+1 (000) 000-0000"/>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Services -->
+  <div class="section">
+    <div class="section-header"><div class="dot"></div><h3>Services</h3></div>
+    <div class="section-body">
+      <div class="col-labels">
+        <span>Description</span>
+        <span>Qty</span>
+        <span style="text-align:center">Unit Price</span>
+        <span style="text-align:right">Total</span>
+        <span></span>
+      </div>
+      <div class="services-list" id="servicesList"></div>
+      <button class="add-row-btn" onclick="addRow()">
+        <span>＋</span> Add Service
+      </button>
+
+      <!-- Discounts / Tax -->
+      <div class="grid-2" style="margin-top:20px; gap:16px;">
+        <div class="field">
+          <label>Discount ($)</label>
+          <input type="number" id="discount" value="0" min="0" step="0.01" oninput="updateTotals()"/>
+        </div>
+        <div class="field">
+          <label>Tax (%)</label>
+          <input type="number" id="tax" value="0" min="0" max="100" step="0.1" oninput="updateTotals()"/>
+        </div>
+      </div>
+
+      <!-- Totals preview -->
+      <div class="totals-preview">
+        <div class="total-row"><span>Subtotal</span><span id="previewSubtotal">$0.00</span></div>
+        <div class="total-row"><span>Discount</span><span id="previewDiscount">-$0.00</span></div>
+        <div class="total-row"><span>Tax</span><span id="previewTax">$0.00</span></div>
+        <div class="total-row grand"><span>Grand Total</span><span id="previewTotal">$0.00</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Notes -->
+  <div class="section">
+    <div class="section-header"><div class="dot"></div><h3>Notes</h3></div>
+    <div class="section-body">
+      <div class="field">
+        <label>Notes / Terms</label>
+        <textarea id="notes" placeholder="Payment is due within 7 days. Thank you for your business!"></textarea>
+      </div>
+    </div>
+  </div>
+
+  <button class="generate-btn" id="generateBtn" onclick="generatePDF()">
+    ⬇ Download Invoice PDF
+  </button>
+</div>
+
+<script>
+  // Set today's date
+  const today = new Date().toISOString().split('T')[0];
+  document.getElementById('invoiceDate').value = today;
+  const due = new Date(); due.setDate(due.getDate() + 7);
+  document.getElementById('dueDate').value = due.toISOString().split('T')[0];
+
+  let rowCount = 0;
+
+  function addRow(desc = '', qty = 1, price = 0) {
+    rowCount++;
+    const id = rowCount;
+    const list = document.getElementById('servicesList');
+    const div = document.createElement('div');
+    div.className = 'service-row';
+    div.id = 'row-' + id;
+    div.innerHTML = `
+      <input type="text" placeholder="Service description..." value="${desc}" oninput="updateTotals()"/>
+      <input type="number" value="${qty}" min="1" step="1" oninput="updateRowTotal(${id})" style="text-align:center"/>
+      <input type="number" value="${price}" min="0" step="0.01" placeholder="0.00" oninput="updateRowTotal(${id})" style="text-align:center"/>
+      <div class="row-total" id="rowtotal-${id}">$0.00</div>
+      <button class="remove-btn" onclick="removeRow(${id})">×</button>
+    `;
+    list.appendChild(div);
+    updateRowTotal(id);
+  }
+
+  function removeRow(id) {
+    document.getElementById('row-' + id)?.remove();
+    updateTotals();
+  }
+
+  function updateRowTotal(id) {
+    const row = document.getElementById('row-' + id);
+    if (!row) return;
+    const inputs = row.querySelectorAll('input[type=number]');
+    const qty = parseFloat(inputs[0].value) || 0;
+    const price = parseFloat(inputs[1].value) || 0;
+    const total = qty * price;
+    document.getElementById('rowtotal-' + id).textContent = '$' + total.toFixed(2);
+    updateTotals();
+  }
+
+  function updateTotals() {
+    let subtotal = 0;
+    document.querySelectorAll('.service-row').forEach(row => {
+      const inputs = row.querySelectorAll('input[type=number]');
+      subtotal += (parseFloat(inputs[0].value) || 0) * (parseFloat(inputs[1].value) || 0);
+    });
+    const discount = parseFloat(document.getElementById('discount').value) || 0;
+    const taxPct = parseFloat(document.getElementById('tax').value) || 0;
+    const taxAmt = subtotal * (taxPct / 100);
+    const grand = subtotal - discount + taxAmt;
+
+    document.getElementById('previewSubtotal').textContent = '$' + subtotal.toFixed(2);
+    document.getElementById('previewDiscount').textContent = '-$' + discount.toFixed(2);
+    document.getElementById('previewTax').textContent = '$' + taxAmt.toFixed(2);
+    document.getElementById('previewTotal').textContent = '$' + grand.toFixed(2);
+  }
+
+  function collectServices() {
+    const rows = document.querySelectorAll('.service-row');
+    return Array.from(rows).map(row => {
+      const inputs = row.querySelectorAll('input');
+      const nums = row.querySelectorAll('input[type=number]');
+      return {
+        description: inputs[0].value,
+        qty: nums[0].value,
+        unitPrice: nums[1].value,
+      };
+    });
+  }
+
+  async function generatePDF() {
+    const btn = document.getElementById('generateBtn');
+    btn.classList.add('loading');
+    btn.textContent = '⏳ Generating...';
+
+    const payload = {
+      invoiceNumber: document.getElementById('invoiceNumber').value,
+      invoiceDate: document.getElementById('invoiceDate').value,
+      dueDate: document.getElementById('dueDate').value,
+      status: document.getElementById('status').value,
+      clientName: document.getElementById('clientName').value,
+      company: document.getElementById('company').value,
+      email: document.getElementById('email').value,
+      phone: document.getElementById('phone').value,
+      discount: document.getElementById('discount').value,
+      tax: document.getElementById('tax').value,
+      notes: document.getElementById('notes').value,
+      services: collectServices(),
+    };
+
+    try {
+      const res = await fetch('/generate-pdf', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+
+      if (!res.ok) throw new Error('Server error');
+
+      const blob = await res.blob();
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `Invoice_${payload.invoiceNumber}.pdf`;
+      a.click();
+      URL.revokeObjectURL(url);
+    } catch (e) {
+      alert('Error generating PDF. Make sure server is running.');
+    }
+
+    btn.classList.remove('loading');
+    btn.textContent = '⬇ Download Invoice PDF';
+  }
+
+  // Add 3 starter rows
+  addRow('', 1, 0);
+  addRow('', 1, 0);
+  addRow('', 1, 0);
+</script>
+</body>
+</html>
